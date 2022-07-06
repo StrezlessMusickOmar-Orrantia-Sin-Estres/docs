@@ -2,7 +2,7 @@
 title: Signing tags
 intro: You can sign tags locally using GPG or S/MIME.
 redirect_from:
-  - /articles/signing-tags-using-gpg/
+  - /articles/signing-tags-using-gpg
   - /articles/signing-tags
   - /github/authenticating-to-github/signing-tags
   - /github/authenticating-to-github/managing-commit-signature-verification/signing-tags
@@ -10,6 +10,7 @@ versions:
   fpt: '*'
   ghes: '*'
   ghae: '*'
+  ghec: '*'
 topics:
   - Identity
   - Access management
@@ -21,7 +22,7 @@ topics:
   $ git tag -s <em>mytag</em>
   # Creates a signed tag
   ```
-2. Verify your signed tag it by running `git tag -v [tag-name]`.
+2. Verify your signed tag by running `git tag -v [tag-name]`.
   ```shell
   $ git tag -v <em>mytag</em>
   # Verifies the signed tag

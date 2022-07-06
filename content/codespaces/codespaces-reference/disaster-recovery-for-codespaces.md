@@ -2,7 +2,8 @@
 title: Disaster recovery for Codespaces
 intro: 'This article describes guidance for a disaster recovery scenario, when a whole region experiences an outage due to major natural disaster or widespread service interruption.'
 versions:
-  free-pro-team: '*'
+  fpt: '*'
+  ghec: '*'
 product: '{% data reusables.gated-features.codespaces %}'
 topics:
   - Codespaces
@@ -23,9 +24,9 @@ The following guidance provides options on how to handle service disruption to t
 
 ## Option 1: Create a new codespace in another region
 
-In the case of a regional outage, we suggest you recreate your codespace in an unaffected region to continue working. This new codespace will have all of the changes as of your last push to {% data variables.product.prodname_dotcom %}. For information on manaully setting another region, see "[Setting your default region for Codespaces](/codespaces/managing-your-codespaces/setting-your-default-region-for-codespaces)."
+In the case of a regional outage, we suggest you recreate your codespace in an unaffected region to continue working. This new codespace will have all of the changes as of your last push to {% data variables.product.prodname_dotcom %}. For information on manually setting another region, see "[Setting your default region for Codespaces](/codespaces/managing-your-codespaces/setting-your-default-region-for-codespaces)."
 
-You can optimize recovery time by configuring a `devcontainer.json` in the project's repository, which allows you to define the tools, runtimes, frameworks, editor settings, extensions, and other configuration necessary to restore the development environment automatically. For more information, see "[Configuring Codespaces for your project](/codespaces/setting-up-your-codespace/configuring-codespaces-for-your-project)."
+You can optimize recovery time by configuring a `devcontainer.json` in the project's repository, which allows you to define the tools, runtimes, frameworks, editor settings, extensions, and other configuration necessary to restore the development environment automatically. For more information, see "[Introduction to dev containers](/codespaces/setting-up-your-codespace/configuring-codespaces-for-your-project)."
 
 ## Option 2: Wait for recovery
 
@@ -41,7 +42,7 @@ While this option does not configure a development environment for you, it will 
 
 ## Option 4: Use Remote-Containers and Docker for a local containerized environment
 
-If your repository has a `devcontainer.json`, consider using the [Remote-Containers extension](https://code.visualstudio.com/docs/remote/containers#_quick-start-open-a-git-repository-or-github-pr-in-an-isolated-container-volume) in Visual Studio Code to build and attach to a local development container for your repository. The setup time for this option will vary depending on your local specifications and the complexity of your dev container setup.
+If your repository has a `devcontainer.json`, consider using the [Remote-Containers extension](https://code.visualstudio.com/docs/remote/containers#_quick-start-open-a-git-repository-or-github-pr-in-an-isolated-container-volume) in {% data variables.product.prodname_vscode %} to build and attach to a local development container for your repository. The setup time for this option will vary depending on your local specifications and the complexity of your dev container setup.
 
 {% note %}
 

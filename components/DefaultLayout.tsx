@@ -6,8 +6,10 @@ import { SmallFooter } from 'components/page-footer/SmallFooter'
 import { ScrollButton } from 'components/ui/ScrollButton'
 import { SupportSection } from 'components/page-footer/SupportSection'
 import { DeprecationBanner } from 'components/page-header/DeprecationBanner'
+import { RestBanner } from 'components/page-header/RestBanner'
 import { useMainContext } from 'components/context/MainContext'
 import { useTranslation } from 'components/hooks/useTranslation'
+import { useRouter } from 'next/router'
 
 type Props = { children?: React.ReactNode }
 export const DefaultLayout = (props: Props) => {
@@ -15,7 +17,6 @@ export const DefaultLayout = (props: Props) => {
     page,
     error,
     isHomepageVersion,
-    currentLanguage,
     currentPathWithoutLanguage,
     currentVersion,
     currentProduct,
@@ -23,7 +24,10 @@ export const DefaultLayout = (props: Props) => {
     fullUrl,
     status,
   } = useMainContext()
-  const { t } = useTranslation(['errors', 'scroll_button'])
+  const { t } = useTranslation(['errors', 'meta', 'scroll_button'])
+  const router = useRouter()
+  const metaDescription = page.introPlainText ? page.introPlainText : t('default_description')
+
   return (
     <div className="d-lg-flex">
       <Head>
@@ -35,7 +39,7 @@ export const DefaultLayout = (props: Props) => {
         ) : null}
 
         {/* For Google and Bots */}
-        {page.introPlainText && <meta name="description" content={page.introPlainText} />}
+        <meta name="description" content={metaDescription} />
         {page.hidden && <meta name="robots" content="noindex" />}
         {page.languageVariants.map((languageVariant) => {
           return (
@@ -52,7 +56,7 @@ export const DefaultLayout = (props: Props) => {
         {page.topics.length > 0 && <meta name="keywords" content={page.topics.join(',')} />}
 
         {/* For analytics events */}
-        {currentLanguage && <meta name="path-language" content={currentLanguage} />}
+        {router.locale && <meta name="path-language" content={router.locale} />}
         {currentVersion && <meta name="path-version" content={currentVersion} />}
         {currentProduct && <meta name="path-product" content={currentProduct.id} />}
         {relativePath && (
@@ -79,22 +83,29 @@ export const DefaultLayout = (props: Props) => {
           </>
         )}
       </Head>
-
+      <a href="#main-content" className="sr-only">
+        Skip to main content
+      </a>
       <SidebarNav />
-
-      <main className="flex-1 min-width-0">
+      {/* Need to set an explicit height for sticky elements since we also
+          set overflow to auto */}
+      <div className="flex-column flex-1">
         <Header />
-        <DeprecationBanner />
+        <main id="main-content" style={{ scrollMarginTop: '5rem' }}>
+          <DeprecationBanner />
+          <RestBanner />
 
-        {props.children}
-
-        <SupportSection />
-        <SmallFooter />
-        <ScrollButton
-          className="position-fixed bottom-0 mb-3 right-0 mr-3"
-          ariaLabel={t('scroll_to_top')}
-        />
-      </main>
+          {props.children}
+        </main>
+        <footer>
+          <SupportSection />
+          <SmallFooter />
+          <ScrollButton
+            className="position-fixed bottom-0 mb-4 right-0 mr-4 z-1"
+            ariaLabel={t('scroll_to_top')}
+          />
+        </footer>
+      </div>
     </div>
   )
 }

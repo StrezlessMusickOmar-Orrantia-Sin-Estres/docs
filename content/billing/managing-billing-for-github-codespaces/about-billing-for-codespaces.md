@@ -5,6 +5,7 @@ intro: 'View pricing and see how to manage {% data variables.product.prodname_co
 permissions: 'To manage billing for Codespaces for an organization, you must be an organization owner or a billing manager.'
 versions:
   fpt: '*'
+  ghec: '*'
 type: overview
 product: '{% data reusables.gated-features.codespaces %}'
 topics:
@@ -14,11 +15,11 @@ topics:
 
 ## {% data variables.product.prodname_codespaces %} pricing
 
-{% data variables.product.prodname_codespaces %} usage is billed for all accounts on the Team and Enterprise plans, and does not include any entitlements. Individual accounts are not currently billed for {% data variables.product.prodname_codespaces %} usage. 
+{% data variables.product.prodname_codespaces %} usage is billed for all organization and enterprise accounts on {% data variables.product.prodname_team %} and {% data variables.product.prodname_enterprise %}, which do not include any free minutes or storage. Personal accounts are not currently billed for {% data variables.product.prodname_codespaces %} usage. 
 
 {% data variables.product.prodname_codespaces %} usage is billed according to the units of measure in the following table:
 
- Product              | SKU      | Unit of measure | Price |
+| Product             | SKU      | Unit of measure | Price |
 | ------------------- | -------- | --------------- | ----- |
 | Codespaces Compute  |  2 core  | 1 hour          | $0.18 |
 |                     |  4 core  | 1 hour          | $0.36 |
@@ -33,7 +34,16 @@ topics:
 
 Your {% data variables.product.prodname_codespaces %} usage shares your account's existing billing date, payment method, and receipt. {% data reusables.dotcom_billing.view-all-subscriptions %}
 
-If you purchased {% data variables.product.prodname_enterprise %} through a Microsoft Enterprise Agreement, you can connect your Azure Subscription ID to your enterprise account to enable and pay for {% data variables.product.prodname_codespaces %} usage. For more information, see "[Connecting an Azure subscription to your enterprise](/github/setting-up-and-managing-your-enterprise/connecting-an-azure-subscription-to-your-enterprise)."
+{% ifversion ghec %}
+If you purchased {% data variables.product.prodname_enterprise %} through a Microsoft Enterprise Agreement, you can connect your Azure Subscription ID to your enterprise account to enable and pay for {% data variables.product.prodname_codespaces %} usage. For more information, see "[Connecting an Azure subscription to your enterprise](/billing/managing-billing-for-your-github-account/connecting-an-azure-subscription-to-your-enterprise)."
+{% endif %}
+
+{% data reusables.dotcom_billing.pricing_calculator.pricing_cal_codespaces %}
+
+### Billing for {% data variables.product.prodname_codespaces %} prebuilds
+
+
+{% data reusables.codespaces.billing-for-prebuilds %} 
 
 ## Setting a spending limit
 
@@ -42,6 +52,14 @@ If you purchased {% data variables.product.prodname_enterprise %} through a Micr
 For information on managing and changing your account's spending limit, see "[Managing your spending limit for {% data variables.product.prodname_codespaces %}](/billing/managing-billing-for-github-codespaces/managing-spending-limits-for-codespaces)."
 
 {% data reusables.codespaces.exporting-changes %}
+
+## Limiting the choice of machine types
+
+By default the machine type with the lowest valid resources is used when a codespace is created. However, users may be able to choose a machine type with more resources. They can do this either when they create a codespace, or they can change the machine type of an existing codespace. For more information, see "[Creating a codespace"](/codespaces/developing-in-codespaces/creating-a-codespace#creating-a-codespace)" and "[Changing the machine type for your codespace](/codespaces/customizing-your-codespace/changing-the-machine-type-for-your-codespace)."
+
+If a machine type that has more resources is chosen, this will affect the per-minute charge for that codespace, as shown above. 
+
+Organization owners can create a policy to restrict the machine types that are available to users. For more information, see "[Restricting access to machine types](/codespaces/managing-codespaces-for-your-organization/restricting-access-to-machine-types)."
 
 ## How billing is handled for forked repositories
 

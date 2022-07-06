@@ -14,6 +14,12 @@ let maxScrollY = 0
 let pauseScrolling = false
 let sentExit = false
 
+function resetPageParams() {
+  maxScrollY = 0
+  pauseScrolling = false
+  sentExit = false
+}
+
 export function getUserEventsId() {
   if (cookieValue) return cookieValue
   cookieValue = Cookies.get(COOKIE_NAME)
@@ -32,6 +38,7 @@ export enum EventType {
   exit = 'exit',
   link = 'link',
   search = 'search',
+  searchResult = 'searchResult',
   navigate = 'navigate',
   survey = 'survey',
   experiment = 'experiment',
@@ -52,6 +59,11 @@ type SendEventProps = {
   link_url?: string
   search_query?: string
   search_context?: string
+  search_result_query?: string
+  search_result_index?: number
+  search_result_total?: number
+  search_result_rank?: number
+  search_result_url?: string
   navigate_label?: string
   survey_token?: string // Honeypot, doesn't exist in schema
   survey_vote?: boolean
@@ -117,10 +129,14 @@ export function sendEvent({ type, version = '1.0.0', ...props }: SendEventProps)
     ...props,
   }
 
-  // Only send the beacon if the feature is not disabled in the user's browser
-  if (navigator?.sendBeacon) {
-    const blob = new Blob([JSON.stringify(body)], { type: 'application/json' })
-    navigator.sendBeacon('/events', blob)
+  const blob = new Blob([JSON.stringify(body)], { type: 'application/json' })
+  const endpoint = '/events'
+  try {
+    // Only send the beacon if the feature is not disabled in the user's browser
+    // Even if the function exists, it can still throw an error from the call being blocked
+    navigator?.sendBeacon(endpoint, blob)
+  } catch {
+    console.warn(`sendBeacon to '${endpoint}' failed.`)
   }
 
   return body
@@ -205,12 +221,18 @@ function initPageAndExitEvent() {
 
   // Client-side routing
   const pushState = history.pushState
-  history.pushState = function (...args) {
-    sendExit()
-    const result = pushState.call(history, ...args)
-    sendPage()
-    sentExit = false
-    maxScrollY = 0
+  history.pushState = function (state, title, url) {
+    // Don't trigger page events on query string or hash changes
+    const newPath = url?.toString().replace(location.origin, '').split('?')[0]
+    const shouldSendEvents = newPath !== location.pathname
+    if (shouldSendEvents) {
+      sendExit()
+    }
+    const result = pushState.call(history, state, title, url)
+    if (shouldSendEvents) {
+      sendPage()
+      resetPageParams()
+    }
     return result
   }
 }
@@ -220,6 +242,15 @@ function initClipboardEvent() {
     document.documentElement.addEventListener(verb, () => {
       sendEvent({ type: EventType.clipboard, clipboard_operation: verb })
     })
+  })
+}
+
+function initCopyButtonEvent() {
+  document.documentElement.addEventListener('click', (evt) => {
+    const target = evt.target as HTMLElement
+    const button = target.closest('.js-btn-copy') as HTMLButtonElement
+    if (!button) return
+    sendEvent({ type: EventType.navigate, navigate_label: 'copy icon button' })
   })
 }
 
@@ -245,10 +276,11 @@ export default function initializeEvents() {
   initPageAndExitEvent() // must come first
   initLinkEvent()
   initClipboardEvent()
+  initCopyButtonEvent()
   initPrintEvent()
   // survey event in ./survey.js
   // experiment event in ./experiment.js
-  // search event in ./search.js
+  // search and search_result event in ./search.js
   // redirect event in middleware/record-redirect.js
   // preference event in ./display-tool-specific-content.js
 }

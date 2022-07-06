@@ -4,6 +4,7 @@ intro: 'Overview of the {% data variables.product.prodname_codespaces %} securit
 miniTocMaxHeadingLevel: 3
 versions:
   fpt: '*'
+  ghec: '*'
 topics:
   - Codespaces
   - Security
@@ -33,7 +34,7 @@ Each codespace has its own isolated virtual network. We use firewalls to block i
 
 ### Authentication
 
-You can connect to a codespace using a web browser or from Visual Studio Code. If you connect from Visual Studio Code, you are prompted to authenticate with {% data variables.product.product_name %}. 
+You can connect to a codespace using a web browser or from {% data variables.product.prodname_vscode %}. If you connect from {% data variables.product.prodname_vscode_shortname %}, you are prompted to authenticate with {% data variables.product.product_name %}. 
 
 Every time a codespace is created or restarted, it's assigned a new {% data variables.product.company_short %} token with an automatic expiry period. This period allows you to work in the codespace without needing to reauthenticate during a typical working day, but reduces the chance that you will leave a connection open when you stop using the codespace.
 
@@ -47,15 +48,19 @@ An organization's administrators specify which repositories should be considered
 
 ### Codespace connections
 
-You can connect to your codespace using the TLS encrypted tunnel provided by the {% data variables.product.prodname_codespaces %} service. Only the creator of a codespace can connect to a codespace. Connections are authenticated with {% data variables.product.product_name %}. 
+You can connect to your codespace using the TLS encrypted tunnel provided by the {% data variables.product.prodname_codespaces %} service. Only the creator of a codespace can connect to a codespace. Connections are authenticated with {% data variables.product.product_name %}.
 
-If you need to allow external access to services running on a codespace, you can enable port forwarding for private or public access. 
+If you need to allow external access to services running on a codespace, you can enable port forwarding for private or public access.
 
 ### Port forwarding
 
 If you need to connect to a service (such as a development web server) running within your codespace, you can configure port forwarding to make the service available on the internet. 
 
+Organization owners can restrict the ability to make forward ports available publicly or within the organization. For more information, see "[Restricting the visibility of forwarded ports](/codespaces/managing-codespaces-for-your-organization/restricting-the-visibility-of-forwarded-ports)."
+
 **Privately forwarded ports**: Are accessible on the internet, but only the codespace creator can access them, after authenticating to {% data variables.product.product_name %}.
+
+**Publicly forwarded ports within your organization**: Are accessible on the internet, but only to members of the same organization as the codespace, after authenticating to {% data variables.product.product_name %}.
 
 **Publicly forwarded ports**: Are accessible on the internet, and anyone on the internet can access them. No authentication is needed to access public forwarded ports.
 
@@ -76,7 +81,9 @@ Codespaces are designed to be security hardened by default. To help maintain thi
 
 Always use encrypted secrets when you want to use sensitive information (such as access tokens) in a codespace. You can access your secrets as environment variables in the codespace, including from the terminal. For example, you can launch a terminal within your codespace and use `echo $SECRET_NAME ` to see the value of a secret.
 
-The secret values are copied to environment variables whenever the codespace is resumed or created, so if you update a secret value while the codespace is running, you’ll need to suspend and resume to pick up the updated value.
+The secret values are copied to environment variables whenever the codespace is resumed or created and are also synced when they are changed.
+
+Secrets are not copied into the environment if you don't have write access to the codespace's repository.
 
 For more information on secrets, see:
 - "[Managing encrypted secrets for your codespaces](/codespaces/managing-your-codespaces/managing-encrypted-secrets-for-your-codespaces)"
@@ -88,13 +95,17 @@ When you create a codespace from a PR branch from a fork, the token in the codes
 - For a private repository, the codespace is granted access to both the fork and parent.
 - For a public repository, the codespace will only have access to the fork and opening PRs on the parent.
 
+We also further protect you in these scenarios by not injecting any of your [codespace secrets](/codespaces/managing-your-codespaces/managing-encrypted-secrets-for-your-codespaces) into the environment.
+
 ### Additional good practices
 
 There are some additional good practices and risks that you should be aware of when using {% data variables.product.prodname_codespaces %}. 
 
 #### Understanding a repository's devcontainer.json file
 
-When creating a codespace, the [devcontainer.json](https://code.visualstudio.com/docs/remote/devcontainerjson-reference) is parsed and applied from the source repo, if one exists.  The devcontainer contains powerful features, such as installing third-party extensions and running arbitrary code through a supplied `postCreateCommand`.
+When you create a codespace, if a `devcontainer.json` file is found for your repository, it is parsed and used to configure your codespace. The `devcontainer.json` file can contain powerful features, such as installing third-party extensions and running arbitrary code supplied in a `postCreateCommand`.
+
+For more information, see "[Introduction to dev containers](/codespaces/setting-up-your-project-for-codespaces/introduction-to-dev-containers)."
 
 #### Granting access through features
 
@@ -102,4 +113,4 @@ Certain development features can potentially add risk to your environment. For e
 
 #### Using extensions
 
-Any additional {% data variables.product.prodname_vscode %} extensions that you've installed can potentially introduce more risk. To help mitigate this risk, ensure that the you only install trusted extensions, and that they are always kept up to date.
+Any additional {% data variables.product.prodname_vscode_shortname %} extensions that you've installed can potentially introduce more risk. To help mitigate this risk, ensure that the you only install trusted extensions, and that they are always kept up to date.
